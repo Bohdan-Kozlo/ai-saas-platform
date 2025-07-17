@@ -56,12 +56,7 @@ export async function signUpAction(
   try {
     const data = Object.fromEntries(formData.entries());
 
-    const processedData = {
-      ...data,
-      acceptTerms: data.acceptTerms === "on",
-    };
-
-    const parsed = signUpSchema.safeParse(processedData);
+    const parsed = signUpSchema.safeParse(data);
     if (!parsed.success) {
       return {
         success: false,

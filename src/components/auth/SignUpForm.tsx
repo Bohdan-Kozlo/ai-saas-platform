@@ -159,9 +159,6 @@ export function SignUpForm() {
           {state.errors?.password && (
             <p className="text-xs text-red-500">{state.errors.password[0]}</p>
           )}
-
-          {/* Password Requirements */}
-          {formData.password}
         </div>
 
         <div className="space-y-2">

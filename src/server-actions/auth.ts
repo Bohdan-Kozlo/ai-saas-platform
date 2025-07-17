@@ -94,19 +94,15 @@ export async function signUpAction(
 }
 
 export async function signInWithProvider(provider: "google" | "github") {
-  try {
-    const result = await auth.api.signInSocial({
-      body: {
-        provider,
-        callbackURL: "/dashboard",
-      },
-      headers: await headers(),
-    });
+  const result = await auth.api.signInSocial({
+    body: {
+      provider,
+      callbackURL: "/dashboard",
+    },
+    headers: await headers(),
+  });
 
-    if (result?.url) {
-      redirect(result.url);
-    }
-  } catch (error) {
-    console.error(`${provider} sign in error:`, error);
+  if (result?.url) {
+    redirect(result.url);
   }
 }

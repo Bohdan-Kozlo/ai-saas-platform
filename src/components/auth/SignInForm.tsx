@@ -7,14 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon, GitHubIcon } from "@/components/ui/icons";
 import { Eye, EyeOff } from "lucide-react";
-import {
-  signInAction,
-  signInWithProvider,
-  type AuthState,
-} from "@/server-actions/auth";
+import { signInAction, signInWithProvider } from "@/server-actions/auth";
 import { useState } from "react";
+import { ActionResponse } from "@/lib/types";
 
-const initialState: AuthState = {};
+const initialState: ActionResponse = {};
 
 export function SignInForm() {
   const [state, formAction, isPending] = useActionState(
@@ -71,6 +68,12 @@ export function SignInForm() {
         </div>
       )}
 
+      {state.message && (
+        <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+          {state.message}
+        </div>
+      )}
+
       {/* Email/Password Form */}
       <form action={formAction} className="space-y-4">
         <div className="space-y-2">
@@ -84,6 +87,9 @@ export function SignInForm() {
             className="h-11"
             disabled={isPending}
           />
+          {state.errors?.email && (
+            <p className="text-xs text-red-500">{state.errors.email[0]}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -113,6 +119,9 @@ export function SignInForm() {
               )}
             </Button>
           </div>
+          {state.errors?.password && (
+            <p className="text-xs text-red-500">{state.errors.password[0]}</p>
+          )}
         </div>
 
         <div className="flex items-center justify-between">

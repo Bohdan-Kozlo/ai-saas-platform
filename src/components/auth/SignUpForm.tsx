@@ -2,19 +2,16 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon, GitHubIcon } from "@/components/ui/icons";
-import { Eye, EyeOff, Check } from "lucide-react";
-import {
-  AuthState,
-  signInWithProvider,
-  signUpAction,
-} from "@/server-actions/auth";
+import { Eye, EyeOff } from "lucide-react";
+import { signInWithProvider, signUpAction } from "@/server-actions/auth";
+import { ActionResponse } from "@/lib/types";
 
-const initialState: AuthState = {};
+const initialState: ActionResponse = {};
 
 export function SignUpForm() {
   const [state, formAction, isPending] = useActionState(
@@ -28,23 +25,6 @@ export function SignUpForm() {
     confirmPassword: "",
   });
 
-  const passwordRequirements = useMemo(
-    () => [
-      { text: "Minimum 8 characters", met: formData.password.length >= 8 },
-      {
-        text: "Contains uppercase letter",
-        met: /[A-Z]/.test(formData.password),
-      },
-      { text: "Contains number", met: /\d/.test(formData.password) },
-      {
-        text: "Contains special character",
-        met: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password),
-      },
-    ],
-    [formData.password]
-  );
-
-  const isPasswordValid = passwordRequirements.every((req) => req.met);
   const doPasswordsMatch =
     formData.password === formData.confirmPassword &&
     formData.confirmPassword !== "";
@@ -107,6 +87,12 @@ export function SignUpForm() {
         </div>
       )}
 
+      {state.message && (
+        <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+          {state.message}
+        </div>
+      )}
+
       {/* Registration Form */}
       <form action={formAction} className="space-y-4">
         <div className="space-y-2">
@@ -120,6 +106,9 @@ export function SignUpForm() {
             className="h-11"
             disabled={isPending}
           />
+          {state.errors?.name && (
+            <p className="text-xs text-red-500">{state.errors.name[0]}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -133,6 +122,9 @@ export function SignUpForm() {
             className="h-11"
             disabled={isPending}
           />
+          {state.errors?.email && (
+            <p className="text-xs text-red-500">{state.errors.email[0]}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -164,32 +156,8 @@ export function SignUpForm() {
               )}
             </Button>
           </div>
-
-          {/* Password Requirements */}
-          {formData.password && (
-            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs font-medium text-gray-700 mb-2">
-                Password requirements:
-              </p>
-              <div className="space-y-1">
-                {passwordRequirements.map((req, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Check
-                      className={`h-3 w-3 ${
-                        req.met ? "text-green-500" : "text-gray-300"
-                      }`}
-                    />
-                    <span
-                      className={`text-xs ${
-                        req.met ? "text-green-700" : "text-gray-500"
-                      }`}
-                    >
-                      {req.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {state.errors?.password && (
+            <p className="text-xs text-red-500">{state.errors.password[0]}</p>
           )}
         </div>
 
@@ -234,7 +202,7 @@ export function SignUpForm() {
         <Button
           type="submit"
           className="w-full h-11 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 transition-all duration-200"
-          disabled={isPending || !isPasswordValid || !doPasswordsMatch}
+          disabled={isPending || !doPasswordsMatch}
         >
           {isPending ? (
             <div className="flex items-center space-x-2">

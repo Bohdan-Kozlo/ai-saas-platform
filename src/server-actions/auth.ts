@@ -1,162 +1,112 @@
 "use server";
 
+import { signInSchema, signUpSchema } from "@/lib/schemas/auth.schema";
+import { ActionResponse } from "@/lib/types";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-
-export interface AuthState {
-  error?: string;
-  success?: boolean;
-  message?: string;
-}
+import { headers } from "next/headers";
 
 export async function signInAction(
-  prevState: AuthState,
+  prevState: ActionResponse,
   formData: FormData
-): Promise<AuthState> {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const rememberMe = formData.get("rememberMe") === "on";
-
-  // Basic validation
-  if (!email || !password) {
-    return {
-      error: "Email and password are required",
-      success: false,
-    };
-  }
-
-  if (!email.includes("@")) {
-    return {
-      error: "Please enter a valid email address",
-      success: false,
-    };
-  }
-
-  if (password.length < 6) {
-    return {
-      error: "Password must be at least 6 characters long",
-      success: false,
-    };
-  }
-
+): Promise<ActionResponse> {
   try {
-    // TODO: Implement actual authentication with better-auth
-    console.log("Sign in attempt:", { email, rememberMe });
+    const data = Object.fromEntries(formData.entries());
 
-    // Simulate authentication delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const parsed = signInSchema.safeParse(data);
+    if (!parsed.success) {
+      return {
+        success: false,
+        errors: parsed.error.flatten().fieldErrors,
+        message: "Invalid credentials",
+      };
+    }
 
-    // For demo purposes, simulate success
-    // In real implementation, integrate with better-auth here
+    const { email, password } = parsed.data;
 
-    // Redirect to dashboard on success
+    const result = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: await headers(),
+    });
+
+    if (!result) {
+      return {
+        success: false,
+        error: "Invalid email or password",
+      };
+    }
+
     redirect("/dashboard");
   } catch (error) {
     console.error("Sign in error:", error);
     return {
-      error: "Invalid email or password",
       success: false,
+      error: "Failed to sign in. Please try again.",
     };
   }
 }
 
 export async function signUpAction(
-  prevState: AuthState,
+  prevState: ActionResponse,
   formData: FormData
-): Promise<AuthState> {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
-  const acceptTerms = formData.get("acceptTerms") === "on";
-
-  // Basic validation
-  if (!name || !email || !password || !confirmPassword) {
-    return {
-      error: "All fields are required",
-      success: false,
-    };
-  }
-
-  if (!email.includes("@")) {
-    return {
-      error: "Please enter a valid email address",
-      success: false,
-    };
-  }
-
-  if (password.length < 8) {
-    return {
-      error: "Password must be at least 8 characters long",
-      success: false,
-    };
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    return {
-      error: "Password must contain at least one uppercase letter",
-      success: false,
-    };
-  }
-
-  if (!/\d/.test(password)) {
-    return {
-      error: "Password must contain at least one number",
-      success: false,
-    };
-  }
-
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    return {
-      error: "Password must contain at least one special character",
-      success: false,
-    };
-  }
-
-  if (password !== confirmPassword) {
-    return {
-      error: "Passwords do not match",
-      success: false,
-    };
-  }
-
-  if (!acceptTerms) {
-    return {
-      error: "You must accept the terms and conditions",
-      success: false,
-    };
-  }
-
+): Promise<ActionResponse> {
   try {
-    // TODO: Implement actual user registration with better-auth
-    console.log("Sign up attempt:", { name, email });
+    const data = Object.fromEntries(formData.entries());
 
-    // Simulate registration delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const parsed = signUpSchema.safeParse(data);
+    if (!parsed.success) {
+      return {
+        success: false,
+        errors: parsed.error.flatten().fieldErrors,
+        message: "Please fix the errors below",
+      };
+    }
 
-    // For demo purposes, simulate success
-    // In real implementation, integrate with better-auth here
+    const { name, email, password } = parsed.data;
 
-    // Redirect to sign-in page with success message
-    redirect("/sign-in?message=Account created successfully. Please sign in.");
+    const result = await auth.api.signUpEmail({
+      body: {
+        name,
+        email,
+        password,
+      },
+      headers: await headers(),
+    });
+
+    if (!result) {
+      return {
+        success: false,
+        error: "Failed to create account. Email might already be in use.",
+      };
+    }
+
+    redirect("/dashboard");
   } catch (error) {
     console.error("Sign up error:", error);
     return {
-      error: "An error occurred while creating your account. Please try again.",
       success: false,
+      error: "Failed to create account. Please try again.",
     };
   }
 }
 
 export async function signInWithProvider(provider: "google" | "github") {
   try {
-    // TODO: Implement OAuth sign-in with better-auth
-    console.log(`Sign in with ${provider}`);
+    const result = await auth.api.signInSocial({
+      body: {
+        provider,
+        callbackURL: "/dashboard",
+      },
+      headers: await headers(),
+    });
 
-    // In real implementation, this would redirect to OAuth provider
-    // For now, just simulate success
-    redirect("/dashboard");
+    if (result?.url) {
+      redirect(result.url);
+    }
   } catch (error) {
     console.error(`${provider} sign in error:`, error);
-    throw new Error(`Failed to sign in with ${provider}`);
   }
 }

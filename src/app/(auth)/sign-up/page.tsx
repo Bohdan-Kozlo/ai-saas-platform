@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { Suspense } from "react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 
@@ -16,9 +15,7 @@ export default function SignUpPage() {
       cardTitle="Sign Up"
       cardDescription="Fill out the form to create a new account"
     >
-      <Suspense fallback={<div>Loading...</div>}>
-        <SignUpForm />
-      </Suspense>
+      <SignUpForm />
     </AuthLayout>
   );
 }

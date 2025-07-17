@@ -1,9 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
-
-const prisma = new PrismaClient();
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { prisma } from "../prisma";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -28,5 +28,21 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 10 * 60,
+    },
+  },
   plugins: [nextCookies()],
 });
+
+export async function isAuthenticatedUser() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return redirect("/sign-in");
+  }
+}

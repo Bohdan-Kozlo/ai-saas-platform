@@ -38,8 +38,6 @@ export async function signInAction(
         error: "Invalid email or password",
       };
     }
-
-    redirect("/dashboard");
   } catch (error) {
     console.error("Sign in error:", error);
     return {
@@ -47,6 +45,7 @@ export async function signInAction(
       error: "Failed to sign in. Please try again.",
     };
   }
+  redirect("/dashboard");
 }
 
 export async function signUpAction(
@@ -82,8 +81,6 @@ export async function signUpAction(
         error: "Failed to create account. Email might already be in use.",
       };
     }
-
-    redirect("/dashboard");
   } catch (error) {
     console.error("Sign up error:", error);
     return {
@@ -91,6 +88,7 @@ export async function signUpAction(
       error: "Failed to create account. Please try again.",
     };
   }
+  redirect("/dashboard");
 }
 
 export async function signInWithProvider(provider: "google" | "github") {

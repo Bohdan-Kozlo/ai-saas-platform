@@ -1,11 +1,15 @@
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { isAuthenticatedUser } from "@/lib/auth";
+import { Toaster } from "react-hot-toast";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await isAuthenticatedUser();
+
   return (
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
@@ -18,6 +22,7 @@ export default function DashboardLayout({
         <DashboardHeader />
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
+      <Toaster />
     </div>
   );
 }

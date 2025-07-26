@@ -1,4 +1,3 @@
-import { isAuthenticatedUser } from "@/lib/auth";
 import {
   Card,
   CardContent,
@@ -10,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { FileText, Sparkles } from "lucide-react";
 
 export default async function ArticleGeneratorPage() {
-  await isAuthenticatedUser();
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">

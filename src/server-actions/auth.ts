@@ -104,3 +104,28 @@ export async function signInWithProvider(provider: "google" | "github") {
     redirect(result.url);
   }
 }
+
+export async function signOutAction(): Promise<ActionResponse> {
+  try {
+    const result = await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    if (!result) {
+      return {
+        success: false,
+        error: "Failed to sign out. Please try again.",
+      };
+    }
+    return {
+      success: true,
+      message: "Successfully signed out",
+    };
+  } catch (error) {
+    console.error("Sign out error:", error);
+    return {
+      success: false,
+      error: "Failed to sign out. Please try again.",
+    };
+  }
+}

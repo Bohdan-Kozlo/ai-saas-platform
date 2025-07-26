@@ -1,4 +1,5 @@
 import { isAuthenticatedUser } from "@/lib/auth";
+import { getDashboardData } from "@/data/get-dashboard-data";
 import {
   Card,
   CardContent,
@@ -17,59 +18,60 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const dashboardCards = [
-  {
-    title: "Article Generator",
-    description: "Generate high-quality articles with AI",
-    icon: FileText,
-    href: "/dashboard/article-generator",
-    color: "bg-blue-500",
-    usage: "5 articles today",
-  },
-  {
-    title: "Blog Title Generator",
-    description: "Create compelling blog titles",
-    icon: Heading,
-    href: "/dashboard/blog-title-generator",
-    color: "bg-green-500",
-    usage: "12 titles generated",
-  },
-  {
-    title: "Image Generator",
-    description: "Generate stunning images with AI",
-    icon: Image,
-    href: "/dashboard/image-generator",
-    color: "bg-purple-500",
-    usage: "3 images created",
-  },
-  {
-    title: "Background Remover",
-    description: "Remove backgrounds from images",
-    icon: Eraser,
-    href: "/dashboard/background-remover",
-    color: "bg-orange-500",
-    usage: "8 backgrounds removed",
-  },
-  {
-    title: "Object Remover",
-    description: "Remove objects from images",
-    icon: Scissors,
-    href: "/dashboard/object-remover",
-    color: "bg-red-500",
-    usage: "2 objects removed",
-  },
-  {
-    title: "Resume Analyzer",
-    description: "Analyze and improve resumes",
-    icon: FileCheck,
-    href: "/dashboard/resume-analyzer",
-    color: "bg-indigo-500",
-    usage: "1 resume analyzed",
-  },
-];
-
 export default async function DashboardPage() {
-  await isAuthenticatedUser();
+  const session = await isAuthenticatedUser();
+  const dashboardData = await getDashboardData(session.user.id);
+
+  const dashboardCards = [
+    {
+      title: "Article Generator",
+      description: "Generate high-quality articles with AI",
+      icon: FileText,
+      href: "/article-generator",
+      color: "bg-blue-500",
+      usage: `${dashboardData.usage.articleUsage} articles generated`,
+    },
+    {
+      title: "Blog Title Generator",
+      description: "Create compelling blog titles",
+      icon: Heading,
+      href: "/blog-title-generator",
+      color: "bg-green-500",
+      usage: `${dashboardData.usage.blogTitleUsage} titles generated`,
+    },
+    {
+      title: "Image Generator",
+      description: "Generate stunning images with AI",
+      icon: Image,
+      href: "/image-generator",
+      color: "bg-purple-500",
+      usage: `${dashboardData.usage.imageUsage} images created`,
+    },
+    {
+      title: "Background Remover",
+      description: "Remove backgrounds from images",
+      icon: Eraser,
+      href: "/background-remover",
+      color: "bg-orange-500",
+      usage: `${dashboardData.usage.backgroundUsage} backgrounds removed`,
+    },
+    {
+      title: "Object Remover",
+      description: "Remove objects from images",
+      icon: Scissors,
+      href: "/object-remover",
+      color: "bg-red-500",
+      usage: `${dashboardData.usage.objectRemoverUsage} objects removed`,
+    },
+    {
+      title: "Resume Analyzer",
+      description: "Analyze and improve resumes",
+      icon: FileCheck,
+      href: "/resume-analyzer",
+      color: "bg-indigo-500",
+      usage: `${dashboardData.usage.resumeAnalyzUsage} resumes analyzed`,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -91,7 +93,9 @@ export default async function DashboardPage() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">31</div>
+            <div className="text-2xl font-bold">
+              {dashboardData.usage.totalUsage}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -100,7 +104,7 @@ export default async function DashboardPage() {
             <Heading className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Pro Plan</div>
+            <div className="text-2xl font-bold">{dashboardData.plan} Plan</div>
           </CardContent>
         </Card>
       </div>

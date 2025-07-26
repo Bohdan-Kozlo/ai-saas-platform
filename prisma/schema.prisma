@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String      @id
   name          String
   email         String
   emailVerified Boolean
@@ -19,9 +18,43 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  plan          Plan?
+  generations   Generation?
 
   @@unique([email])
   @@map("user")
+}
+
+model Plan {
+  id        String    @id @default(ulid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      UserPlan
+  startedAt DateTime
+  expiresAt DateTime?
+
+  @@map("plan")
+}
+
+model Generation {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalUsage         Int      @default(0)
+  articleUsage       Int      @default(0)
+  blogTitleUsage     Int      @default(0)
+  imageUsage         Int      @default(0)
+  backgroundUsage    Int      @default(0)
+  objectRemoverUsage Int      @default(0)
+  resumeAnalyzUsage  Int      @default(0)
+  createdAt          DateTime @default(now())
+
+  @@map("generation")
+}
+
+enum UserPlan {
+  FREE
+  PRO
 }
 
 model Session {

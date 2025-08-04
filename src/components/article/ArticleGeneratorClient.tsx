@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArticleConfiguration } from "@/components/article/ArticleConfiguration";
 import { GeneratedArticle } from "@/components/article/GeneratedArticle";
-import { ArticleGenerationState } from "@/server-actions/article-actions";
+import { ArticleGenerationState } from "@/lib/types";
 
 export function ArticleGeneratorClient() {
   const [generatedContent, setGeneratedContent] = useState<string>("");

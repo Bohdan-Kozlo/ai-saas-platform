@@ -29,7 +29,7 @@ export function GeneratedTitles({ titles }: GeneratedTitlesProps) {
         .join("\n");
       try {
         await navigator.clipboard.writeText(allTitles);
-        setCopiedIndex(COPY_ALL_INDEX);
+        setCopiedIndex(-1);
       } catch (error) {
         console.error("Failed to copy all:", error);
       }

@@ -15,7 +15,7 @@ import {
 const navigationItems = [
   {
     title: "Article Generator",
-    href: "/dashboard/article-generator",
+    href: "/generate/article",
     icon: FileText,
     description: "Generate high-quality articles with AI",
   },

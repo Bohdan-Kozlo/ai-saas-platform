@@ -49,7 +49,7 @@ Return the titles as a numbered list (1. Title, 2. Title, etc.)`;
 
     return {
       success: true,
-      titles: titles,
+      titles,
     };
   } catch (error) {
     console.error("Error generating blog titles:", error);

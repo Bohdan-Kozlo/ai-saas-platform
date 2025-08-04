@@ -1,66 +1,65 @@
 "use server";
 
-import { generateArticle } from "@/lib/llm/generateArticle";
+import { generateBlogTitles } from "@/lib/llm/generateBlogTitles";
 import { isAuthenticatedUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ArticleGenerationState } from "@/lib/types";
+import { BlogTitleGenerationState } from "@/lib/types";
 
-export async function generateArticleAction(
-  prevState: ArticleGenerationState,
+export async function generateBlogTitlesAction(
+  prevState: BlogTitleGenerationState,
   formData: FormData
-): Promise<ArticleGenerationState> {
+): Promise<BlogTitleGenerationState> {
   try {
     const { user } = await isAuthenticatedUser();
 
-    const topic = formData.get("topic") as string;
-    const length = formData.get("length") as string;
+    const keyword = formData.get("keyword") as string;
+    const category = formData.get("category") as string;
 
-    if (!topic || !length) {
+    if (!keyword || !category) {
       return {
         success: false,
-        error: "Topic and length are required",
+        error: "Keyword and category are required",
         isGenerating: false,
       };
     }
 
-    if (topic.trim().length < 3) {
+    if (keyword.trim().length < 2) {
       return {
         success: false,
-        error: "Topic must be at least 3 characters long",
+        error: "Keyword must be at least 2 characters long",
         isGenerating: false,
       };
     }
+    const result = await generateBlogTitles(keyword, category);
 
-    const result = await generateArticle(topic, length);
-
-    if (result.success && result.content) {
+    if (result.success && result.titles) {
       await prisma.generation.upsert({
         where: { userId: user.id },
         update: {
           totalUsage: { increment: 1 },
-          articleUsage: { increment: 1 },
+          blogTitleUsage: { increment: 1 },
         },
         create: {
           userId: user.id,
           totalUsage: 1,
-          articleUsage: 1,
+          blogTitleUsage: 1,
         },
       });
 
       return {
         success: true,
-        content: result.content,
+        titles: result.titles,
         isGenerating: false,
       };
     } else {
       return {
         success: false,
-        error: result.error || "Failed to generate article",
+        error: result.error || "Failed to generate blog titles",
         isGenerating: false,
       };
     }
   } catch (error) {
-    console.error("Article generation action error:", error);
+    console.error("Blog title generation action error:", error);
     return {
       success: false,
       error:

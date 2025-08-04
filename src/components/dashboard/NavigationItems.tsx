@@ -21,7 +21,7 @@ const navigationItems = [
   },
   {
     title: "Blog Title Generator",
-    href: "/dashboard/blog-title-generator",
+    href: "/generate/blog-title",
     icon: Heading,
     description: "Create compelling blog titles",
   },

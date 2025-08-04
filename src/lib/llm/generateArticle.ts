@@ -36,7 +36,8 @@ Please format the article with proper markdown formatting including headings, bu
           content: prompt,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.8,
+      max_tokens: 4500,
     });
 
     const generatedContent = response.choices[0]?.message?.content;

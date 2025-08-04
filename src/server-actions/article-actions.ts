@@ -2,6 +2,7 @@
 
 import { generateArticle } from "@/lib/llm/generateArticle";
 import { isAuthenticatedUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export interface ArticleGenerationState {
   success?: boolean;
@@ -15,7 +16,7 @@ export async function generateArticleAction(
   formData: FormData
 ): Promise<ArticleGenerationState> {
   try {
-    await isAuthenticatedUser();
+    const { user } = await isAuthenticatedUser();
 
     const topic = formData.get("topic") as string;
     const length = formData.get("length") as string;
@@ -39,6 +40,19 @@ export async function generateArticleAction(
     const result = await generateArticle(topic, length);
 
     if (result.success && result.content) {
+      await prisma.generation.upsert({
+        where: { userId: user.id },
+        update: {
+          totalUsage: { increment: 1 },
+          articleUsage: { increment: 1 },
+        },
+        create: {
+          userId: user.id,
+          totalUsage: 1,
+          articleUsage: 1,
+        },
+      });
+
       return {
         success: true,
         content: result.content,

@@ -23,7 +23,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Sparkles className="h-4 w-4 text-primary-foreground" />
           </div>
-          <Link href="/">
+          <Link href="/dashboard">
             <div className="flex flex-col">
               <span className="text-lg font-semibold">AI SaaS</span>
             </div>

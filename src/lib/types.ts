@@ -23,3 +23,7 @@ export interface BlogTitleGenerationState extends BaseGenerationState {
 export interface GenerationState<T = unknown> extends BaseGenerationState {
   data?: T;
 }
+
+export interface ImageGenerationState extends BaseGenerationState {
+  imageUrl?: string;
+}

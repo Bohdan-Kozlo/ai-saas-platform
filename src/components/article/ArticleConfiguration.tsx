@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Settings, Wand2, AlertCircle } from "lucide-react";
-import { generateArticleAction } from "@/server-actions/article-actions";
+import { generateArticleAction } from "@/server-actions/article-action";
 import { ArticleGenerationState } from "@/lib/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 

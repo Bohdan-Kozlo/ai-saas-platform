@@ -27,7 +27,7 @@ const navigationItems = [
   },
   {
     title: "Image Generator",
-    href: "/dashboard/image-generator",
+    href: "/generate/image",
     icon: Image,
     description: "Generate stunning images with AI",
   },

@@ -29,7 +29,7 @@ model Plan {
   id        String    @id @default(ulid())
   userId    String    @unique
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan      UserPlan
+  plan      UserPlan  @default(FREE)
   startedAt DateTime
   expiresAt DateTime?
 

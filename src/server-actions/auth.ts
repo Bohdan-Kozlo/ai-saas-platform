@@ -5,6 +5,7 @@ import { ActionResponse } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { createUserPlan } from "@/data/create-user-plan";
 
 export async function signInAction(
   prevState: ActionResponse,
@@ -81,6 +82,8 @@ export async function signUpAction(
         error: "Failed to create account. Email might already be in use.",
       };
     }
+
+    await createUserPlan(result.user.id);
   } catch (error) {
     console.error("Sign up error:", error);
     return {
@@ -100,6 +103,10 @@ export async function signInWithProvider(provider: "google" | "github") {
     headers: await headers(),
   });
 
+  if ("user" in result && result.user) {
+    await createUserPlan(result.user.id);
+  }
+
   if (result?.url) {
     redirect(result.url);
   }
@@ -117,6 +124,7 @@ export async function signOutAction(): Promise<ActionResponse> {
         error: "Failed to sign out. Please try again.",
       };
     }
+
     return {
       success: true,
       message: "Successfully signed out",
